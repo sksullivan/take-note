@@ -15,7 +15,8 @@ const state = {
   collapsedNotes: [],
   filters: [],
   search: "",
-  cols: 1
+  cols: 1,
+  unfilteredNoteIndexMap: {},
 };
 
 const data = {

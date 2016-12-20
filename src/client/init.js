@@ -39,6 +39,4 @@ const handleKeys = function (e) {
 
 window.onkeydown = handleKeys;
 
-window.testUndo = function () {
-  controller.popState();
-}
+// window.unfilteredMap = data.state.unfilteredNoteIndexMap;

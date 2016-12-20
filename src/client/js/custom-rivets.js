@@ -1,6 +1,8 @@
 'use strict';
 
 const deepToString = require('./helpers').deepToString;
+const clearObjectProperties = require('./helpers').clearObjectProperties;
+const data = require('./models').data;
 
 // Custom Rivets Items
 
@@ -19,10 +21,8 @@ rivets.binders['on-enter'] = {
   bind: function (el) {
     var rivetsView = this, $el = $(el);
     $el.on('keyup', function(event) {
-      console.log("what");
       if (event.keyCode == 13) {
         $el.blur();
-        console.log("trace")
         rivetsView.observer.value()(event,rivetsView.observer.obj);
       }
     });
@@ -36,12 +36,37 @@ rivets.binders['on-enter'] = {
 rivets.formatters.filterByFilterItems = function (items, textFilters, search) {
   const filters = textFilters.slice();
   filters.push(search);
-  return items.filter(function (item) {
+  var numNotes = data.model.notes.length;
+  
+  // Clear index map
+  clearObjectProperties(data.state.unfilteredNoteIndexMap);
+
+  // If we have no filters and no search...
+  if (textFilters.length == 0 && search == "") {
+    // Make index array do no reindexing and stop.
+    for (var i = 0; i < numNotes; i++) {
+      data.state.unfilteredNoteIndexMap[i] = i;
+    }
+    return data.model.notes;
+  }
+
+  const filteredNoteIndices = [];
+  const filteredNotes = items.filter(function (item, index) {
     const itemText = deepToString(item).toLowerCase();
-    return filters.map(function (filter) {
+    const keep = filters.map(function (filter) {
       return itemText.indexOf(filter.toLowerCase()) != -1;
     }).reduce(function (prev, curr) {
       return prev && curr;
     },true);
+    if (keep) {
+      filteredNoteIndices.push(index);
+    }
+    return keep;
   });
+
+  for (var i = 0; i < filteredNoteIndices.length; i++) {
+    data.state.unfilteredNoteIndexMap[i] = filteredNoteIndices[i]
+  }
+
+  return filteredNotes;
 };

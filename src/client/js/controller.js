@@ -7,6 +7,7 @@ const stateHistory = require('./models').stateHistory;
 
 const reflowNotes = require('./helpers').reflowNotes;
 const pageParams = require('./helpers').pageParams;
+const noteIndex = require('./helpers').noteIndex;
 
 const operations = require('./operations');
 
@@ -47,7 +48,7 @@ const controller = {
     modelOperationsQueue.splice(0,modelOperationsQueue.length);
   },
   deleteNote: function (e, model) {
-    modelOperationsQueue.push({ type: 'delete', note: data.model.notes[model.index] });
+    modelOperationsQueue.push({ type: 'delete', note: data.model.notes[noteIndex(model.index)] });
     controller.syncNotes();
   },
   newNote: function (e, model) {
@@ -78,24 +79,16 @@ const controller = {
     controller.syncState();
   },
   updateNoteData: function (e, model) {
-    let updatedNoteIndex;
-    if (data.state.filters.length > 0 || data.state.search != "") {
-      const filteredNotes = rivets.formatters.filterByFilterItems(data.model.notes,data.state.filters,data.state.search);
-      updatedNoteIndex = data.model.notes.indexOf(filteredNotes[model.index]); 
-    } else {
-      updatedNoteIndex = model.index;
-    }
     if (e.target.tagName == 'INPUT') {
-      data.model.notes[updatedNoteIndex].title = e.target.value;
+      data.model.notes[noteIndex(model.index)].title = e.target.value;
     } else {
-      data.model.notes[updatedNoteIndex].text = e.target.innerText;
+      data.model.notes[noteIndex(model.index)].text = e.target.innerText;
     }
-    modelOperationsQueue.push({ type: 'update', note: data.model.notes[updatedNoteIndex] });
+    modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model.index)] });
     controller.syncNotes();
   },
   applyTextFilterFromTag: function (e, model) {
-    console.log("here we go");
-    const filterText = data.model.notes[model['%note%']].tags[model['%tag%']].title;
+    const filterText = data.model.notes[noteIndex(model['%note%'])].tags[model['%tag%']].title;
     stateOperationsQueue.push(operations.addFilter(filterText));
     controller.syncState();
   },
@@ -122,9 +115,13 @@ const controller = {
     reflowNotes(data.state.cols);
   },
   addTag: function (e, model) {
-    data.model.notes[model.index].tags.push({ title: '' });
-    modelOperationsQueue.push({ type: 'update', note: data.model.notes[model.index] });
+    data.model.notes[noteIndex(model.index)].tags.push({ title: '' });
+    modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model.index)] });
+
+    // Janky...
     controller.syncNotes(function () {
+      // NOTE: Here we DO NOT use the model reindexed for the original notes array since
+      // $('.note-container') will yield ONLY displayed notes.
       const newTag = $($('.note-container')[model.index])
         .find('p')
         .last();
@@ -134,16 +131,16 @@ const controller = {
     });
   },
   updateTagData: function (e, model) {
-    if (model['%note%'] !== undefined) {
+    if (noteIndex(model['%note%']) !== undefined) {
       $(e.target).attr('contenteditable','false');
-      data.model.notes[model['%note%']].tags[model['%tag%']].title = e.target.innerText.replace(/\n/g,'');
-      modelOperationsQueue.push({ type: 'update', note: data.model.notes[model.index] });
+      data.model.notes[noteIndex(model['%note%'])].tags[model['%tag%']].title = e.target.innerText.replace(/\n/g,'');
+      modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model['%note%'])] });
       controller.syncNotes();
     }
   },
   deleteTag: function (e, model) {
-    data.model.notes[model['%note%']].tags.splice(model['%tag%'],1);
-    modelOperationsQueue.push({ type: 'update', note: data.model.notes[model['%note%']] });
+    data.model.notes[noteIndex(model['%note%'])].tags.splice(model['%tag%'],1);
+    modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model['%note%'])] });
     controller.syncNotes();
   },
   keyedNote: function (e, model) {

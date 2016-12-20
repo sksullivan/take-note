@@ -1,10 +1,16 @@
 'use strict';
 
+
+const data = require('./models').data;
+
 // Helper Functions
 
 function deepToString (item) {
   return Object.keys(item).map(function (key) {
     const value = item[key];
+    if (key == "_id" || key == "__v") {
+      return '';
+    }
     if (typeof value == 'string') {
       return value;
     } else if (typeof value == 'object') {
@@ -57,8 +63,18 @@ function reflowNotes (cols) {
   },0);
 }
 
+function noteIndex (index) {
+  return data.state.unfilteredNoteIndexMap[Object.keys(data.state.unfilteredNoteIndexMap).indexOf(index.toString())];
+}
+
+function clearObjectProperties (object) {
+  Object.keys(object).forEach(function(key) { delete object[key]; });
+}
+
 module.exports = {
   pageParams,
   reflowNotes,
   deepToString,
+  noteIndex,
+  clearObjectProperties,
 }
