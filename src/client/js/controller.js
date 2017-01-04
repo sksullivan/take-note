@@ -18,7 +18,7 @@ const controller = {
     modelOperationsQueue.splice(0,modelOperationsQueue.length);
     return rivets.bind(
       document.querySelector('#content'),
-z     { data: data, controller: controller }
+      { data: data, controller: controller }
     );
   },
   loadNotes: function () {
