@@ -18,7 +18,7 @@ const controller = {
     modelOperationsQueue.splice(0,modelOperationsQueue.length);
     return rivets.bind(
       document.querySelector('#content'),
-      { data: data, controller: controller }
+z     { data: data, controller: controller }
     );
   },
   loadNotes: function () {
@@ -94,25 +94,23 @@ const controller = {
   },
   applyTextFilterFromSearch: function (e, model) {
     if (data.state.search != '') {
-      data.state.filters.push(data.state.search);
-      controller.clearSearch();
-      reflowNotes(data.state.cols);
+      stateOperationsQueue.push(operations.addFilter(data.state.search));
+      stateOperationsQueue.push(operations.clearSearch());
+      controller.syncState();
     }
   },
   deleteFilter: function (e, model) {
-    data.state.filters.splice(model.index,1);
-    reflowNotes(data.state.cols);
+    stateOperationsQueue.push(operations.clearFilter(model.index));
+    controller.syncState();
   },
   clearSearch: function (e, model) {
-    $('#search').val('');
-    data.state.search = '';
-    reflowNotes(data.state.cols);
+    stateOperationsQueue.push(operations.clearSearch());
+    controller.syncState();
   },
   clearAll: function () {
-    $('#search').val('');
-    data.state.search = '';
-    data.state.filters = [];
-    reflowNotes(data.state.cols);
+    stateOperationsQueue.push(operations.clearSearch());
+    stateOperationsQueue.push(operations.clearFilters());
+    controller.syncState();
   },
   addTag: function (e, model) {
     data.model.notes[noteIndex(model.index)].tags.push({ title: '' });

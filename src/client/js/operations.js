@@ -10,16 +10,34 @@ const operations = {
       return newState;
     }
   },
-  setSearch: function (search) {
-
-  },
   addFilter: function (filterText) {
     return function (state) {
       const newState = JSON.parse(JSON.stringify(state));
       newState.filters.push(filterText);
       return newState;
     }
-  }
+  },
+  clearFilters: function () {
+    return function (state) {
+      const newState = JSON.parse(JSON.stringify(state));
+      newState.filters.splice(0,newState.filters.length);
+      return newState;
+    }
+  },
+  clearSearch: function () {
+    return function (state) {
+      const newState = JSON.parse(JSON.stringify(state));
+      newState.search = "";
+      return newState;
+    }
+  },
+  clearFilter: function (filterIndex) {
+    return function (state) {
+      const newState = JSON.parse(JSON.stringify(state));
+      newState.filters.splice(filterIndex,1);
+      return newState;
+    }
+  },
 }
 
 module.exports = operations;
