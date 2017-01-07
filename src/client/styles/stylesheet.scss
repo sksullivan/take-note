@@ -46,7 +46,9 @@ input.full-width {
 }
 
 .note p:not(.tag), .note input:not(.tag) {
-  white-space: pre-wrap;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   width: 100%;
   background-color: $note-back-default;
   border-radius: 5px;
@@ -232,4 +234,8 @@ p.tag:empty:not(:focus)::before {
 
 .note-title:focus::-webkit-input-placeholder {
   color: $page-back;
+}
+
+.note p.expanded {
+  white-space: pre-wrap;
 }

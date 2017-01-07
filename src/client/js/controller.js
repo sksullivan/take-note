@@ -79,11 +79,18 @@ const controller = {
     controller.syncState();
   },
   updateNoteData: function (e, model) {
+    // collapse note since we just unfocused it
+    stateOperationsQueue.push(operations.toggleExpand(model.index));
+    controller.syncState();
+    
+    // Sync our local model with the values in the UI
     if (e.target.tagName == 'INPUT') {
       data.model.notes[noteIndex(model.index)].title = e.target.value;
     } else {
       data.model.notes[noteIndex(model.index)].text = e.target.innerText;
     }
+
+    // Sync our local model to the server
     modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model.index)] });
     controller.syncNotes();
   },
@@ -140,6 +147,13 @@ const controller = {
     data.model.notes[noteIndex(model['%note%'])].tags.splice(model['%tag%'],1);
     modelOperationsQueue.push({ type: 'update', note: data.model.notes[noteIndex(model['%note%'])] });
     controller.syncNotes();
+  },
+  noteExpandClass: function (model) {
+    return "nothing";
+  },
+  expandNote: function (e, model) {
+    stateOperationsQueue.push(operations.toggleExpand(model.index));
+    controller.syncState();
   },
   keyedNote: function (e, model) {
     if (e.shiftKey) {

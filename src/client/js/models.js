@@ -12,7 +12,7 @@ const model = {
 
 const state = {
   hiddenTags: [],
-  collapsedNotes: [],
+  expandedNotes: [],
   filters: [],
   search: "",
   cols: 1,

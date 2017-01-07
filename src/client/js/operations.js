@@ -38,6 +38,14 @@ const operations = {
       return newState;
     }
   },
+  toggleExpand: function (noteIndex) {
+    return function (state) {
+      const newState = JSON.parse(JSON.stringify(state));
+      const noteExpandStatus = newState.expandedNotes[noteIndex]; 
+      newState.expandedNotes[noteIndex] = !noteExpandStatus;
+      return newState;
+    }
+  }, 
 }
 
 module.exports = operations;

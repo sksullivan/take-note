@@ -34,13 +34,25 @@
       <div class="grid col-md-12">
         <div class="note grid-item" rv-each-note="data.model.notes | filterByFilterItems data.state.filters data.state.search">
           <div class="note-container">
-            <b><input class="note-title" type="text" rv-value="note.title" rv-on-enter="controller.updateNoteData" rv-on-blur="controller.updateNoteData" placeholder="New note"></b>
-            <p contenteditable="true" class="note-text" rv-text="note.text" rv-on-blur="controller.updateNoteData" data-placeholder="Write some nice stuff here!"></p>
+            <b><input class="note-title" type="text" placeholder="New note"
+              rv-value="note.title"
+              rv-on-focus="controller.expandNote"
+              rv-on-enter="controller.updateNoteData"
+              rv-on-blur="controller.updateNoteData"></b>
+            <p contenteditable="true" class="note-text" data-placeholder="Write some nice stuff here!"
+              rv-add-class="controller.noteExpandClass | noteExpandWatcher note data.state.expandedNotes"
+              rv-text="note.text"
+              rv-on-focus="controller.expandNote"
+              rv-on-blur="controller.updateNoteData"></p>
             <p class="date">{ note.dateCreated }</p>
             <div class="tags">
               <ul class="tags">
                 <li class="tag" rv-each-tag="note.tags">
-                  <p contenteditable="false" class="tag" type="text" rv-text="tag.title" rv-on-enter="controller.updateTagData" rv-on-blur="controller.updateTagData" rv-on-click="controller.applyTextFilterFromTag" data-placeholder="tag name"></p><a><i class="fa fa-times" aria-hidden="true" rv-on-click="controller.deleteTag"></i></a>
+                  <p contenteditable="false" class="tag" type="text" data-placeholder="tag name"
+                    rv-text="tag.title"
+                    rv-on-enter="controller.updateTagData"
+                    rv-on-blur="controller.updateTagData"
+                    rv-on-click="controller.applyTextFilterFromTag"></p><a><i class="fa fa-times" aria-hidden="true" rv-on-click="controller.deleteTag"></i></a>
                 </li>
                 <li class="add-tag">
                   <a><i class="fa fa-plus-square" aria-hidden="true" rv-on-click="controller.addTag"></i></a>

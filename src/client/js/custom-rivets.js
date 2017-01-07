@@ -7,6 +7,9 @@ const data = require('./models').data;
 // Custom Rivets Items
 
 rivets.binders['add-class'] = function (el, value) {
+  if (typeof value == "function") {
+    value = value(this.observer.obj);
+  }
   if (el.addedClass) {
     $(el).removeClass(el.addedClass);
     delete el.addedClass;
@@ -32,6 +35,16 @@ rivets.binders['on-enter'] = {
   },
   function: true
 };
+
+rivets.formatters.noteExpandWatcher = function (items, note, expandedNotes) {
+  const noteIndex = data.model.notes.indexOf(note);
+  const noteExpandStatus = expandedNotes[noteIndex];
+  if (noteExpandStatus === undefined || noteExpandStatus == false) {
+    return "";
+  } else {
+    return "expanded";
+  }
+} 
 
 rivets.formatters.filterByFilterItems = function (items, textFilters, search) {
   const filters = textFilters.slice();
